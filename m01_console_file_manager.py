@@ -208,10 +208,23 @@ while True:
         f_name = input('   Введите имя каталога, который должен ' +
                        'стать новым текущим каталогом: ')
         if os.path.isdir(f_name):
-            os.chdir(f_name)
-            print('   Новый текущий рабочий каталог:', os.getcwd())
-            continue  # Переходим к выбору действия
-        print('   Введённое имя не является каталогом.\nОперация не выполнена')
+            try:
+                os.chdir(f_name)
+                # Эта функция может вызывать исключение OSError и подклассы,
+                # такие как FileNotFoundError, PermissionError и NotADirectoryError.
+                # Ошибки FileNotFoundError, NotADirectoryError отсекаются проверкой
+                # if os.path.isdir(f_name).
+                # Поэтому остаётся проверить только PermissionError
+                print('   Новый текущий рабочий каталог:', os.getcwd())
+                continue  # Переходим к выбору действия
+            # except FileNotFoundError:
+            # except NotADirectoryError:
+            except PermissionError:
+                # Исключение PermissionError поднимается при попытке запустить
+                # операцию без соответствующих прав доступа - например, прав
+                # доступа к файловой системе
+                print(f'   Нет соответствующих прав доступа для перехода на {f_name}')
+        print('   Ошибка при смене каталога.\nОперация не выполнена')
     elif choice == '12':
         # 12. выход
         # выход из программы.
